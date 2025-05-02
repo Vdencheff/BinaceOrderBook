@@ -104,7 +104,7 @@ private:
         auto endTime = std::chrono::high_resolution_clock::now();
 
         if (result != 0) {
-            std::cout << "Error has occured!" << std::endl;
+            std::cout << __func__ << " Error has occured!" << std::endl;
             return 1;
         }
 

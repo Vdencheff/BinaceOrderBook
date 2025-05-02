@@ -1,4 +1,4 @@
-This file describes project structure.
+This file describes project structure and functional decisions.
 
 ~\OrderBookManagement\WebSocketAccessToBinance.py:
 	This python script connects to Binance stream and save provided data.
@@ -31,3 +31,14 @@ FunctionalTests.hpp:
 	
 PerformanceTests.hpp:
 	Tests for time and memory consumption.
+	
+Having std::unordered_map as a internal structure for order book provides better update time and less memory consumption, compared to std::map.
+It has slower best element search and no search in range.
+Having map provides fast best element search and have search in range.
+
+Binance stream provides bids and asks entries as string. String manipulation is unefficient compared to integer number manipulation.
+For that reason bids and asks string values are converted to unsigned long long. The accuracy is preserved and speed is increased.
+The bids and asks strings provide floating point data. To preserve accuracy this data is multiplied to 10^8.
+Consider that the output of the program is in [10^-8 BTC].
+program output              -> actual value
+9465012345678 [10^-8 BTC]  -> 94650.12345678 [BTC]

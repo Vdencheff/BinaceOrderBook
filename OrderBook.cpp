@@ -13,68 +13,6 @@ OrderBook::OrderBook(std::unordered_map<std::string, std::unordered_map<ull, ull
 {
 }
 
-void OrderBook::printOrderBook(std::map<std::string, std::map<ull, ull, DescendingComparator>>& orderBookBids, std::map<std::string, std::map<ull, ull>>& orderBookAsks, int detailLevel) {
-    long totalBidsEntries = 0;
-    long totalAsksEntries = 0;
-    if (detailLevel == 1) {
-        std::cout << "OrderBook\nBids:" << std::endl;
-    }
-    for (const auto& [symbol, bids] : orderBookBids) {
-        totalBidsEntries += orderBookBids[symbol].size();
-        if (detailLevel == 1) {
-            std::cout << "Bids entries: " << orderBookBids[symbol].size() << std::endl;
-            for (const auto& [price, quantity] : bids) {
-                std::cout << symbol << ": [" << price << " -> " << quantity << "]\n";
-            }
-        }
-    }
-    if (detailLevel == 1) {
-        std::cout << "Asks:" << std::endl;
-    }
-    for (const auto& [symbol, asks] : orderBookAsks) {
-        totalAsksEntries += orderBookAsks[symbol].size();
-        if (detailLevel == 1) {
-            std::cout << "Asks entries: " << orderBookAsks[symbol].size() << std::endl;
-            for (const auto& [price, quantity] : asks) {
-                std::cout << symbol << ": [" << price << " -> " << quantity << "]\n";
-            }
-        }
-    }
-    std::cout << "Total Bids entries: " << totalBidsEntries << std::endl;
-    std::cout << "Total Bids entries: " << totalAsksEntries << std::endl;
-}
-
-void OrderBook::printOrderBook(std::unordered_map<std::string, std::unordered_map<ull, ull>> unOrderBookBids, std::unordered_map < std::string, std::unordered_map<ull, ull>> unOrderBookAsks, int detailLevel) {
-    long totalBidsEntries = 0;
-    long totalAsksEntries = 0;
-    if (detailLevel == 1) {
-        std::cout << "OrderBook\nBids:" << std::endl;
-        
-    }
-    for (const auto& [symbol, bids] : unOrderBookBids) {
-        totalBidsEntries += unOrderBookBids[symbol].size();
-        if (detailLevel == 1) {
-            std::cout << "Bids entries: " << unOrderBookBids[symbol].size() << std::endl;
-            for (const auto& [price, quantity] : bids) {
-                std::cout << symbol << ": [" << price << " -> " << quantity << "]\n";
-            }
-        }
-    }
-    if (detailLevel == 1) {
-        std::cout << "Asks:" << std::endl;
-    }
-    for (const auto& [symbol, asks] : unOrderBookAsks) {
-        totalAsksEntries += unOrderBookAsks[symbol].size();
-        if (detailLevel == 1) {
-            std::cout << "Asks entries: " << unOrderBookAsks[symbol].size() << std::endl;
-            for (const auto& [price, quantity] : asks) {
-                std::cout << symbol << ": [" << price << " -> " << quantity << "]\n";
-            }
-        }
-    }
-    std::cout << "Total Bids entries: " << totalBidsEntries << std::endl;
-    std::cout << "Total Bids entries: " << totalAsksEntries << std::endl;
-}
 void OrderBook::printBestOffers(std::map<std::string, std::map<ull, ull, DescendingComparator>>& orderBookBids, std::map<std::string, std::map<ull, ull>>& orderBookAsks) {
     std::cout << "\nBest Bids:\n";
     for (const auto& [symbol, bids] : orderBookBids) {
@@ -132,68 +70,6 @@ std::string OrderBook::randomEntryGenerator(int bidCount, int asksCount)
 {
     RandomEntryGenerator reg;
     return reg.createEntry(bidCount, asksCount); // bid count, asks count
-}
-
-int OrderBook::bookUpdate(std::map<std::string, std::map<ull, ull, DescendingComparator>>& orderBookBids, std::map<std::string, std::map<ull, ull>>& orderBookAsks, std::string& dataBase) {
-    // Open the file containing multiple JSON entries
-    std::ifstream inputFile(dataBase);
-    if (!inputFile.is_open()) {
-        std::cerr << "Failed to open the file." << std::endl;
-        return 1;
-    }
-    // Process each JSON entry in the file
-    std::string line;
-    while (std::getline(inputFile, line)) { // Read each line
-        int result = bookUpdateHelper(orderBookBids, orderBookAsks, line);
-        if (result) {
-            std::cerr << "OrderBook::" << __func__ << ": Error reported " << std::endl;
-            return 1;
-        }
-    }
-    return 0;
-}
-
-int OrderBook::bookUpdate(std::unordered_map<std::string, std::unordered_map<ull, ull>>& unOrderBookBids, std::unordered_map < std::string, std::unordered_map<ull, ull>>& unOrderBookAsks, std::string& dataBase) {
-    // Open the file containing multiple JSON entries
-    std::ifstream inputFile(dataBase);
-    if (!inputFile.is_open()) {
-        std::cerr << "Failed to open the file." << std::endl;
-        return 1;
-    }
-    // Process each JSON entry in the file
-    std::string line;
-    while (std::getline(inputFile, line)) { // Read each line
-        int result = bookUpdateHelper(unOrderBookBids, unOrderBookAsks, line);
-        if (result) {
-            std::cerr << "OrderBook::" << __func__ << ": Error reported " << std::endl;
-            return 1;
-        }
-    }
-    return 0;
-}
-
-int OrderBook::bookUpdate(std::map<std::string, std::map<ull, ull, DescendingComparator>>& orderBookBids, std::map<std::string, std::map<ull, ull>>& orderBookAsks, unsigned long entryCount, int bidCount, int asksCount) {
-    for (unsigned long i = 0; i < entryCount; ++i) {
-        std::string line = randomEntryGenerator(bidCount, asksCount);
-        int result = bookUpdateHelper(orderBookBids, orderBookAsks, line);
-        if (result) {
-            std::cerr << "OrderBook::" << __func__ << ": Error reported " << std::endl;
-            return 1;
-        }
-    }
-    return 0;
-}
-
-int OrderBook::bookUpdate(std::unordered_map<std::string, std::unordered_map<ull, ull>>& unOrderBookBids, std::unordered_map < std::string, std::unordered_map<ull, ull>>& unOrderBookAsks, unsigned long entryCount, int bidCount, int asksCount) {
-    for (unsigned long i = 0; i < entryCount; ++i) {
-        std::string line = randomEntryGenerator(bidCount, asksCount);
-        int result = bookUpdateHelper(unOrderBookBids, unOrderBookAsks, line);
-        if (result) {
-            std::cerr << "OrderBook::" << __func__ << ": Error reported " << std::endl;
-            return 1;
-        }
-    }
-    return 0;
 }
 
 int OrderBook::bookUpdateHelper(std::map<std::string, std::map<ull, ull, DescendingComparator>>& orderBookBids, std::map<std::string, std::map<ull, ull>>& orderBookAsks, std::string& line) {
@@ -286,8 +162,6 @@ int OrderBook::bookUpdateHelper(std::unordered_map<std::string, std::unordered_m
                 return 1;
             }
             if (bidQuantity == 0) {
-                // TODO update best price
-                // Removing an entry requires check if this entry was best bid. If so find new best bid.
                 unOrderBookBids[symbol].erase(bidPrice);
                 if (unOrderBookBids[symbol].size() == 0) {
                     unOrderBookBids.erase(symbol);
@@ -296,7 +170,7 @@ int OrderBook::bookUpdateHelper(std::unordered_map<std::string, std::unordered_m
             }
             else {
                 updateBestBid(symbol, bidPrice, bidQuantity);
-                unOrderBookBids[symbol][bidPrice] = bidQuantity; // Store price as key, quantity as value
+                unOrderBookBids[symbol][bidPrice] = bidQuantity;
             }
         }
         // Extract asks (a) and store in the map
